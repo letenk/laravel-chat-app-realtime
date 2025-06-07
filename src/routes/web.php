@@ -8,6 +8,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/', HomeController::class)->name('dashboard');
 
     Route::get('/chat/{user:username}', [ChatController::class, 'show'])->name('chats.show');
+    Route::post('/chat/{user:username}', [ChatController::class, 'store'])->name('chats.store');
 });
 
 require __DIR__.'/auth.php';

@@ -1,9 +1,18 @@
 import React from "react";
-import { Head } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import App from "@/Layouts/App";
 
 export default function Show(props){
     const { user } = props
+    const {data, setData, reset, errors, post } = useForm({ message: '' })
+    const submitHandler = (event) => {
+      event.preventDefault();
+      post(route('chats.store', user.username), {
+        onSuccess: () => {
+          reset('message');
+        }
+      })
+    }
 
     return (
       <div>
@@ -20,7 +29,16 @@ export default function Show(props){
               </div>
            </div>
            <div className="border-t">
-               <input type="text" placeholder="Start typing . . ." name="message" id="message" className="form-text focus:outline-none focus:border-0 focus:ring-0 border-0 w-full" />
+               <form onSubmit={submitHandler}>
+                  <input 
+                    value={data.message} 
+                    onChange={ (event) => setData({...data, message: event.target.value}) } 
+                    type="text" 
+                    placeholder="Start typing . . ." 
+                    name="message" 
+                    id="message" 
+                    className="form-text focus:outline-none focus:border-0 focus:ring-0 border-0 w-full"/>
+               </form>
            </div>
         </div> 
       </div> 
