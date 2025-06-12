@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Head, useForm, usePage } from "@inertiajs/react";
 import App from "@/Layouts/App";
+import { Inertia } from "@inertiajs/inertia";
 
 export default function Show(props) {
 
@@ -16,6 +17,8 @@ export default function Show(props) {
   }
 
   const {auth} = usePage().props;
+  const scrollRef = useRef(null);
+  const messageRef = useRef(null);
   const { user, chats } = props
   const { data, setData, reset, errors, post } = useForm({ message: '' })
   const submitHandler = (event) => {
@@ -23,9 +26,26 @@ export default function Show(props) {
     post(route('chats.store', user.username), {
       onSuccess: () => {
         reset('message');
+
+        scrollRef.current.scrollTo(0, 999999999);
       }
     })
   }
+
+// realtime reload
+Echo.channel('chats').listen('MessageSent', ({ chat }) => {
+    Inertia.reload({ 
+      preserveScroll: true,
+      onSuccess: () => {
+        scrollRef.current.scrollTo(0, 999999999);
+      }
+     })
+});
+
+useEffect(() => {
+  scrollRef.current.scrollTo(0, 999999999);
+  messageRef.current.focus()
+}, [])
 
   return (
     <div>
@@ -36,7 +56,7 @@ export default function Show(props) {
             {user.name}
           </h1>
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2" ref={scrollRef}>
           {
             chats.length ? chats.map((chat) => (
               
@@ -57,6 +77,7 @@ export default function Show(props) {
         <div className="border-t py-2 px-4">
           <form onSubmit={submitHandler}>
             <input
+            ref={messageRef}
               value={data.message}
               onChange={(event) => setData({ ...data, message: event.target.value })}
               type="text"

@@ -11,4 +11,9 @@ Route::middleware('auth')->group(function(){
     Route::post('/chat/{user:username}', [ChatController::class, 'store'])->name('chats.store');
 });
 
+Route::get('/broadcast-test', function () {
+    broadcast(new \App\Events\MessageSent('Hello from backend!'));
+    return 'event sent';
+});
+
 require __DIR__.'/auth.php';
