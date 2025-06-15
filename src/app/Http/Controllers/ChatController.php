@@ -37,7 +37,7 @@ class ChatController extends Controller
         ]);
 
         // Send chat to pusher use event
-        broadcast(new MessageSent($chat))->toOthers();
+        broadcast(new MessageSent($chat->load('receiver')))->toOthers();
 
         return back();
     }
